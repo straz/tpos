@@ -1,15 +1,4 @@
 var RED_ICON = 'http://labs.google.com/ridefinder/images/mm_20_red.png';
-var GREEN_ICON = 'http://labs.google.com/ridefinder/images/mm_20_green.png';
-var ARROW = {
-   //path: "M512 32l-480 480h288v512h384v-512h288z",
-   //scale: .017
-   //path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-   fillColor: 'green',
-   fillOpacity: 0.8,
-   scale: 4.5,
-   strokeOpacity: 0
- };
-
 var INITIAL_ZOOM = 14;
 var TRAIN_MARKERS = [];
 
@@ -66,20 +55,28 @@ function lookupRouteColor(){
   return properties['color'];
 }
 
+function getTrainIcon(bearing){
+  return {
+    fillOpacity: 0.8,
+    scale: 4.5,
+    strokeOpacity: 0,
+    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+    rotation: parseInt(bearing),
+    fillColor: lookupRouteColor()
+  };
+}
+
 // wait till map is loaded, then draw marker
 function drawTrainMarker(lat, lng, title, bearing){
   var map_loader = $(document).data('MAP_P');
-  var icon = JSON.parse(JSON.stringify(ARROW));
-  icon.path = google.maps.SymbolPath.FORWARD_CLOSED_ARROW;
-  icon.rotation = parseInt(bearing);
-  icon.fillColor = lookupRouteColor();
+  var icon = getTrainIcon(bearing);
   map_loader.done(function(){
 		    var map = $(document).data('MAP');
 		    var m = new google.maps.Marker({
 		      position: {lat: lat, lng: lng},
 		      map: map,
 		      icon: icon,
-		      title: title + ' dir:' + bearing + '\u00B0'});
+		      title: title});
 		    TRAIN_MARKERS.push(m);
 		  });
   }

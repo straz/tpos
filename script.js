@@ -1,7 +1,7 @@
 MBTA_API_KEY = 'wX9NwuHnZU2ToO7GmGR9uw';
 MBTA_API_URL = 'http://realtime.mbta.com/developer/api/v2/';
 
-DEFAULT_ROUTE = 'Green-C';
+DEFAULT_ROUTE = 'Red';
 
 // sequence for select menu
 ROUTE_ORDER = ['Red', 'Orange', 'Blue', 'Green-B', 'Green-C', 'Green-D', 'Green-E', 741, 742];
@@ -92,7 +92,7 @@ function plot_data(data){
       var lat = parseFloat(vehicle.vehicle_lat);
       var lng = parseFloat(vehicle.vehicle_lon);
       var timestamp = vehicle.vehicle_timestamp;
-      drawTrainMarker(lat, lng, 'id:' + id + ' @' + timestamp, bearing);
+      drawTrainMarker(lat, lng, 'train #' + id, bearing);
       }
     }
 }
