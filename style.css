@@ -1,0 +1,18 @@
+#map-canvas {
+ width: 650px;
+ height: 500px;
+} 
+
+#legend {
+ display: none;
+ background: white;
+ opacity:0.8;
+ padding: 10px;
+ margin: 10px;
+ border: solid 1px #ddd;
+}
+
+#legend select {
+  margin-top: .5em;
+}
+
