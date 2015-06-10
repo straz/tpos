@@ -8,6 +8,6 @@ Google Maps (for the Javascript Maps API) and the MBTA (for the realtime data fe
 
 
 ## Demo
-Visit [tpos.us](tpos.us)
+Visit [http://tpos.us](http://tpos.us)
 
 
