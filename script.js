@@ -1,21 +1,22 @@
 MBTA_API_KEY = 'wX9NwuHnZU2ToO7GmGR9uw';
 MBTA_API_URL = 'http://realtime.mbta.com/developer/api/v2/';
 
-DEFAULT_ROUTE = 'Red';
+DEFAULT_ROUTE = 'All';
 
 // sequence for select menu
-ROUTE_ORDER = ['Red', 'Orange', 'Blue', 'Green-B', 'Green-C', 'Green-D', 'Green-E', 741, 742];
+ROUTE_ORDER = ['All', 'Red', 'Orange', 'Blue', 'Green-B', 'Green-C', 'Green-D', 'Green-E', 741, 742];
 
 // map key onto properties
-ROUTES = { 'Green-B': {name:'Green-B', color:'green'},
+ROUTES = { 'All': {name: 'All'},
+	   'Green-B': {name:'Green-B', color:'green'},
 	   'Green-C': {name:'Green-C', color:'green'},
 	   'Green-D': {name:'Green-D', color:'green'},
 	   'Green-E': {name:'Green-E', color:'green'},
 	   'Red':  {name:'Red', color:'red'},
 	   'Orange': {name:'Orange', color:'orange'},
 	   'Blue':{name:'Blue', color:'blue'},
-	   '741':'Silver SL1',
-	   '742':'Silver SL2'
+	   '741': {name: 'Silver SL1', color: '#BBB'},
+	   '742': {name: 'Silver SL2', color: '#BBB'}
 	 };
 
 // MAP_P is a promise that waits for the map to be loaded.
@@ -24,7 +25,7 @@ MAP_P = $.Deferred().done(init_map);
 $(document).data('MAP_P', MAP_P);
 
 $(document).ready(function(){
-		    init_lines();
+		    init_routes();
 		    $('button#refresh').click(plot_mbta);
 		    $('#routes').change(plot_mbta);
 		    plot_mbta();});
@@ -46,7 +47,7 @@ function change_route(){
 }
 
 // reset menu of available routes
-function init_lines(){
+function init_routes(){
   $('li#routes ul li').remove();
   for (var i in ROUTE_ORDER){
     var key = ROUTE_ORDER[i];
@@ -60,7 +61,23 @@ function init_lines(){
 }
 
 function plot_mbta() {
+  deleteMarkers();
+  update_my_position(); // refresh 'you are here' marker position
   var route = $('#routes').val();
+  if (route == 'All'){
+     for (var i in ROUTE_ORDER){
+       var r = ROUTE_ORDER[i];
+       if (r == 'All'){
+	 continue;
+       }
+       plot_one_route(r);
+     }
+  } else {
+    plot_one_route(route);
+  }
+}
+
+function plot_one_route(route){
   var params = { route: route,
 		 api_key: MBTA_API_KEY,
 		 jsonpcallback: 'handle_callback',
@@ -88,7 +105,6 @@ function handle_callback (data){
 }
 
 function plot_data(data){
-  deleteMarkers();
   var directions = data.direction;
   for (var dir_i in directions){
     var dir = directions[dir_i];
@@ -99,12 +115,13 @@ function plot_data(data){
       if (vehicle == undefined){
 	continue;
       }
+      var route_id = data.route_id;
       var bearing = vehicle.vehicle_bearing;
       var id = vehicle.vehicle_id;
       var lat = parseFloat(vehicle.vehicle_lat);
       var lng = parseFloat(vehicle.vehicle_lon);
       var timestamp = vehicle.vehicle_timestamp;
-      drawTrainMarker(lat, lng, 'train #' + id, bearing);
+      drawTrainMarker(lat, lng, 'train #' + id, bearing, route_id);
       }
     }
 }

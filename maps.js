@@ -1,73 +1,91 @@
 var RED_ICON = 'http://labs.google.com/ridefinder/images/mm_20_red.png';
 var INITIAL_ZOOM = 14;
 var TRAIN_MARKERS = [];
+var MY_MARKER = null;
+var DEFAULT_POS = {lat: 42.346577, lng: -71.1247365}; // Beacon Hill, Boston
 
-$(document).ready(init_location);
+$(document).ready(init_map);
 
-function init_location(){
+function init_map(){
   if (!navigator.geolocation){
-    console.log('geolocation not supported by this browser');
-    return;
+    load_map_noLocation('Geolocation not supported by this browser');
+  } else {
+    navigator.geolocation.getCurrentPosition(load_map_foundLocation, load_map_noLocation);
   }
-  navigator.geolocation.getCurrentPosition(foundLocation, noLocation);
 }
 
-function foundLocation(position){
+function update_my_position(){
+  if (!navigator.geolocation){
+    update_noLocation('Geolocation not supported by this browser');
+  } else {
+    navigator.geolocation.getCurrentPosition(update_pos_foundLocation, update_pos_noLocation);
+  }
+}
+
+function load_map_noLocation(err){
+  console.log('could not find location', err);
+  load_map(DEFAULT_POS);
+}
+
+function update_pos_noLocation(err){
+  console.log('could not find location', err);
+}
+
+function load_map_foundLocation(position){
   var lat = position.coords.latitude;
   var lng = position.coords.longitude;
-  initialize_maps(lat, lng);
+  load_map({lat: lat, lng: lng});
 }
 
-// initialize map
-function initialize_maps(lat, lng) {
-  var mapOptions = { center: { lat: lat, lng: lng}, zoom: INITIAL_ZOOM };
+function update_pos_foundLocation(position){
+  var lat = position.coords.latitude;
+  var lng = position.coords.longitude;
+  update_my_marker({lat: lat, lng: lng});
+}
+
+function load_map(position) {
+  var mapOptions = { center: position, zoom: INITIAL_ZOOM };
   var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   var map_p = $(document).data('MAP_P');
   map_p.resolve(map);
-  drawMarker(lat, lng, RED_ICON, 'Your current position');
+  init_my_marker(map);
+  update_my_marker(position);
 }
 
-function noLocation(err){
-  console.log('could not find location', err);
-  var default_lat = 42.346577;
-  var default_lng = -71.1247365;
-  initialize_maps(default_lat, default_lng);
+
+// called after map is loaded
+function init_my_marker(map){
+  MY_MARKER = new google.maps.Marker({
+		icon: RED_ICON,
+		position: DEFAULT_POS,
+		map: map,
+		title: 'Your current position'});
 }
 
-// wait till map is loaded, then draw marker
-function drawMarker(lat, lng, icon, title){
-  var map_loader = $(document).data('MAP_P');
-  map_loader.done(function(){
-		    var map = $(document).data('MAP');
-		    var m = new google.maps.Marker({
-		      position: {lat: lat, lng: lng},
-		      map: map,
-		      icon: icon,
-		      title: title});
-		  });
-  }
+function update_my_marker(position){
+  MY_MARKER.setPosition(position);
+}
 
-function lookupRouteColor(){
-  var route = $('#routes').val();
-  var properties = ROUTES[route];
+function lookupRouteColor(route_id){
+  var properties = ROUTES[route_id];
   return properties['color'];
 }
 
-function getTrainIcon(bearing){
+function getTrainIcon(bearing, route_id){
   return {
     fillOpacity: 0.8,
     scale: 4.5,
     strokeOpacity: 0,
     path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
     rotation: parseInt(bearing),
-    fillColor: lookupRouteColor()
+    fillColor: lookupRouteColor(route_id)
   };
 }
 
 // wait till map is loaded, then draw marker
-function drawTrainMarker(lat, lng, title, bearing){
+function drawTrainMarker(lat, lng, title, bearing, route_id){
   var map_loader = $(document).data('MAP_P');
-  var icon = getTrainIcon(bearing);
+  var icon = getTrainIcon(bearing, route_id);
   map_loader.done(function(){
 		    var map = $(document).data('MAP');
 		    var m = new google.maps.Marker({
