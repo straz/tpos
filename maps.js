@@ -97,7 +97,6 @@ function drawTrainMarker(lat, lng, title, bearing, route_id){
 		  });
   }
 
-
 // Sets the map on all train markers.
 function setAllMap(map) {
   for (var i in TRAIN_MARKERS) {
