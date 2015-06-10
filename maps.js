@@ -24,9 +24,7 @@ function initialize_maps(lat, lng) {
   var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   var map_p = $(document).data('MAP_P');
   map_p.resolve(map);
-  map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push($('#legend')[0]);
   drawMarker(lat, lng, RED_ICON, 'Your current position');
-  $('#legend').css('display', 'block');
 }
 
 function noLocation(err){
@@ -50,7 +48,7 @@ function drawMarker(lat, lng, icon, title){
   }
 
 function lookupRouteColor(){
-  var route = $('#legend select').val();
+  var route = $('#routes').attr('value');
   var properties = ROUTES[route];
   return properties['color'];
 }

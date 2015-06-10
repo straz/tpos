@@ -31,24 +31,35 @@ function init_map(map){
   $(document).data('MAP', map);
 }
 
+vv = 3;
+
+function change_route(){
+  var val = null;
+  vv = this;
+  if (this == window){
+    val = DEFAULT_ROUTE;
+  } else {
+    val = $(this).attr('value');
+  }
+  $('#routes').attr('value', val);
+  $('#routes a.routename').text(val);
+}
+
 // reset menu of available routes
 function init_lines(){
-  $('#legend option').remove();
+  $('li#routes ul li').remove();
   for (var i in ROUTE_ORDER){
     var key = ROUTE_ORDER[i];
     var val = ROUTES[key]['name'];
-    var option = $('<option/>', {value:key}).html(val);
-    if (key == DEFAULT_ROUTE){
-      option.attr('selected', true);
-    }
-    $('#legend select').append(option);
+    var option = $('<li/>', {value:key}).html(val).click(change_route);
+    $('li#routes ul').append(option);
   }
-  $('#legend select').change(plot_mbta);
-  $('#legend button').click(plot_mbta);
+  change_route();
+  $('li#routes ul li').click(plot_mbta);
 }
 
 function plot_mbta() {
-  var route = $('#legend select').val();
+  var route = $('#routes').attr('value');
   var params = { route: route,
 		 api_key: MBTA_API_KEY,
 		 jsonpcallback: 'handle_callback',
