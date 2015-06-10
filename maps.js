@@ -48,7 +48,7 @@ function drawMarker(lat, lng, icon, title){
   }
 
 function lookupRouteColor(){
-  var route = $('#routes').attr('value');
+  var route = $('#routes').val();
   var properties = ROUTES[route];
   return properties['color'];
 }

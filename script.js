@@ -25,13 +25,13 @@ $(document).data('MAP_P', MAP_P);
 
 $(document).ready(function(){
 		    init_lines();
+		    $('button#refresh').click(plot_mbta);
+		    $('#routes').change(plot_mbta);
 		    plot_mbta();});
 
 function init_map(map){
   $(document).data('MAP', map);
 }
-
-vv = 3;
 
 function change_route(){
   var val = null;
@@ -51,15 +51,16 @@ function init_lines(){
   for (var i in ROUTE_ORDER){
     var key = ROUTE_ORDER[i];
     var val = ROUTES[key]['name'];
-    var option = $('<li/>', {value:key}).html(val).click(change_route);
-    $('li#routes ul').append(option);
+    var option = $('<option/>', {value:key}).html(val);
+    if (DEFAULT_ROUTE == key){
+	  option.attr('selected', true);
+    }
+    $('#routes').append(option);
   }
-  change_route();
-  $('li#routes ul li').click(plot_mbta);
 }
 
 function plot_mbta() {
-  var route = $('#routes').attr('value');
+  var route = $('#routes').val();
   var params = { route: route,
 		 api_key: MBTA_API_KEY,
 		 jsonpcallback: 'handle_callback',
