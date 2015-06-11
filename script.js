@@ -3,6 +3,8 @@ MBTA_API_URL = 'http://realtime.mbta.com/developer/api/v2/';
 
 DEFAULT_ROUTE = 'All';
 
+ERRORS_SEEN = {};
+
 // sequence for select menu
 ROUTE_ORDER = ['All', 'Red', 'Orange', 'Blue', 'Green-B', 'Green-C', 'Green-D', 'Green-E', 741, 742];
 
@@ -97,6 +99,22 @@ function handle_api(data){
   if (data.status == 200){
     var msg = data.responseText;
     eval(msg);
+  } else {
+    var status_code = data.status;
+    var err = find_err_msg(data.responseText);
+    if (err == null){
+      err = HtmlEncode(data.responseText);
+    }
+    err = "MBTA API error (" + status_code + "): " + err;
+    show_alert_if_unseen(err, err);
+  }
+}
+
+function find_err_msg(msg){
+  var rx = /\<message\>(.*)\<\/message\>/;
+  var found = rx.exec(msg);
+  if (found != null){
+    return found[1];
   }
 }
 
@@ -124,4 +142,28 @@ function plot_data(data){
       drawTrainMarker(lat, lng, 'train #' + id, bearing, route_id);
       }
     }
+}
+
+// Logs msgs (using key) to avoid repeating it once seen.
+function show_alert_if_unseen(msg, key){
+  var seen = ERRORS_SEEN[key];
+  if (seen != true){
+    show_alert(msg);
+    ERRORS_SEEN[key] = true;
+  }
+}
+
+function show_alert(msg){
+  var alert = $('<div/>', {role: 'alert'}).addClass('alert alert-warning alert-dismissable');
+  var button = $('<button/>', {type: 'button', 'data-dismiss':'alert', 'aria-label':'close'}).addClass('close');
+  var span = $('<span/>', {'aria-hidden':true}).html('&times;');
+  alert.append(button.append(span), msg);
+  $('nav').after(alert);
+}
+
+function HtmlEncode(s){
+  var el = document.createElement("div");
+  el.innerText = el.textContent = s;
+  s = el.innerHTML;
+  return s;
 }
