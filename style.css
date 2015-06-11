@@ -7,4 +7,10 @@ nav.navbar {  margin-bottom: 0px; }
  width: 100%;
 } 
 
+#map-canvas .waiting { 
+   padding: 3em; 
+   font-size: 140%;
+   color: #DDD;
+ }
 
+#map-canvas .waiting img { margin-right: 1em; }
