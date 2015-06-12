@@ -4,6 +4,14 @@ var TRAIN_MARKERS = [];
 var MY_MARKER = null;
 var DEFAULT_POS = {lat: 42.346577, lng: -71.1247365}; // Beacon Hill, Boston
 
+ROUTE_COLORS = {
+  'GREEN':'green',
+  'RED':'red',
+  'BLUE':'blue',
+  'ORANGE':'orange',
+  'SILVER':'gray'
+};
+
 $(document).ready(init_map);
 
 function init_map(){
@@ -43,6 +51,8 @@ function update_pos_foundLocation(position){
   update_my_marker({lat: lat, lng: lng});
 }
 
+var INFO_WINDOW = null;
+
 function load_map(position) {
   var mapOptions = { center: position, zoom: INITIAL_ZOOM };
   var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
@@ -52,15 +62,9 @@ function load_map(position) {
   colorize_routes(map);
   init_my_marker(map);
   update_my_marker(position);
+  INFO_WINDOW = new google.maps.InfoWindow({ content: 'train info' });
 }
 
-ROUTE_COLORS = {
-  'GREEN':'green',
-  'RED':'red',
-  'BLUE':'blue',
-  'ORANGE':'orange',
-  'SILVER':'gray'
-};
 
 function colorize_routes(map){
   map.data.setStyle(function(feature){
@@ -97,7 +101,7 @@ function lookupRouteColor(route_id){
 }
 
 function getTrainIcon(bearing, route_id){
-  return {
+  var arrow = {
     fillOpacity: 0.8,
     scale: 4.5,
     strokeOpacity: 0,
@@ -105,6 +109,14 @@ function getTrainIcon(bearing, route_id){
     rotation: parseInt(bearing),
     fillColor: lookupRouteColor(route_id)
   };
+  if (route_id == '741' || route_id == '742'){
+    arrow.strokeOpacity = 0.8;
+    arrow.strokeColor = '#444';
+    arrow.path = google.maps.SymbolPath.CIRCLE;
+    arrow.strokeWeight = 1;
+    arrow.scale = 7;
+  }
+  return arrow;
 }
 
 // wait till map is loaded, then draw marker
@@ -119,6 +131,11 @@ function drawTrainMarker(lat, lng, title, bearing, route_id){
 		      icon: icon,
 		      title: title});
 		    TRAIN_MARKERS.push(m);
+		    google.maps.event.addListener(m, 'click',
+						  function() {
+						    INFO_WINDOW.setContent(title);
+						    INFO_WINDOW.open(map,m);
+						  });
 		  });
   }
 

@@ -123,12 +123,16 @@ function handle_callback (data){
 }
 
 function plot_data(data){
+  var route_name = data.route_name;
+  var mode_name = data.mode_name;
   var directions = data.direction;
   for (var dir_i in directions){
     var dir = directions[dir_i];
+    var direction_name = dir.direction_name;
     var trips = dir.trip;
     for (var trip_i in trips){
       var trip = trips[trip_i];
+      var trip_headsign = trip.trip_headsign;
       var vehicle = trip.vehicle;
       if (vehicle == undefined){
 	continue;
@@ -139,7 +143,10 @@ function plot_data(data){
       var lat = parseFloat(vehicle.vehicle_lat);
       var lng = parseFloat(vehicle.vehicle_lon);
       var timestamp = vehicle.vehicle_timestamp;
-      drawTrainMarker(lat, lng, 'train #' + id, bearing, route_id);
+      var title = trip_headsign + ' (' + direction_name + ')<br/>'
+	+ route_name + '<br/>'
+	+ '#' +  id  + ' (' + mode_name.toLowerCase() + ')';
+      drawTrainMarker(lat, lng, title, bearing, route_id);
       }
     }
 }
