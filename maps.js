@@ -3,6 +3,7 @@ var INITIAL_ZOOM = 14;
 var TRAIN_MARKERS = [];
 var MY_MARKER = null;
 var DEFAULT_POS = {lat: 42.346577, lng: -71.1247365}; // Beacon Hill, Boston
+var BUS_ROUTE_TYPE = 3; // spec for route_type (https://developers.google.com/transit/gtfs/reference)
 
 ROUTE_COLORS = {
   'GREEN':'green',
@@ -100,7 +101,7 @@ function lookupRouteColor(route_id){
   return properties['color'];
 }
 
-function getTrainIcon(bearing, route_id){
+function getTrainIcon(bearing, route_id, route_type){
   var arrow = {
     fillOpacity: 0.8,
     scale: 4.5,
@@ -109,7 +110,12 @@ function getTrainIcon(bearing, route_id){
     rotation: parseInt(bearing),
     fillColor: lookupRouteColor(route_id)
   };
-  if (route_id == '741' || route_id == '742'){
+  if (route_id == 'Orange'){
+    arrow.strokeOpacity = 0.8;
+    arrow.strokeColor = '#444';
+    arrow.strokeWeight = 1;
+  }
+  if (route_type == BUS_ROUTE_TYPE){
     arrow.strokeOpacity = 0.8;
     arrow.strokeColor = '#444';
     arrow.path = google.maps.SymbolPath.CIRCLE;
@@ -120,9 +126,9 @@ function getTrainIcon(bearing, route_id){
 }
 
 // wait till map is loaded, then draw marker
-function drawTrainMarker(lat, lng, title, bearing, route_id){
+function drawTrainMarker(lat, lng, title, bearing, route_id, route_type){
   var map_loader = $(document).data('MAP_P');
-  var icon = getTrainIcon(bearing, route_id);
+  var icon = getTrainIcon(bearing, route_id, route_type);
   map_loader.done(function(){
 		    var map = $(document).data('MAP');
 		    var m = new google.maps.Marker({

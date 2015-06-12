@@ -6,7 +6,7 @@ DEFAULT_ROUTE = 'All';
 ERRORS_SEEN = {};
 
 // sequence for select menu
-ROUTE_ORDER = ['All', 'Red', 'Orange', 'Blue', 'Green-B', 'Green-C', 'Green-D', 'Green-E', 741, 742];
+ROUTE_ORDER = ['All', 'Red', 'Orange', 'Blue', 'Green-B', 'Green-C', 'Green-D', 'Green-E', 66, 741, 742];
 
 // map key onto properties
 ROUTES = { 'All': {name: 'All'},
@@ -17,6 +17,7 @@ ROUTES = { 'All': {name: 'All'},
 	   'Red':  {name:'Red', color:'red'},
 	   'Orange': {name:'Orange', color:'orange'},
 	   'Blue':{name:'Blue', color:'blue'},
+	   '66':{name:'66', color:'#BBB'},
 	   '741': {name: 'Silver SL1', color: '#BBB'},
 	   '742': {name: 'Silver SL2', color: '#BBB'}
 	 };
@@ -124,6 +125,7 @@ function handle_callback (data){
 
 function plot_data(data){
   var route_name = data.route_name;
+  var route_type = data.route_type;
   var mode_name = data.mode_name;
   var directions = data.direction;
   for (var dir_i in directions){
@@ -146,7 +148,7 @@ function plot_data(data){
       var title = trip_headsign + ' (' + direction_name + ')<br/>'
 	+ route_name + '<br/>'
 	+ '#' +  id  + ' (' + mode_name.toLowerCase() + ')';
-      drawTrainMarker(lat, lng, title, bearing, route_id);
+      drawTrainMarker(lat, lng, title, bearing, route_id, route_type);
       }
     }
 }
