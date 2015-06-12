@@ -48,6 +48,8 @@ function load_map(position) {
   var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   var map_p = $(document).data('MAP_P');
   map_p.resolve(map);
+  map.data.loadGeoJson('data/MBTARapidTransitLines.json');
+  map.data.setStyle({ strokeOpacity:0.2, strokeColor: 'blue' });
   init_my_marker(map);
   update_my_marker(position);
 }
