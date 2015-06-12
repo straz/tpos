@@ -49,9 +49,32 @@ function load_map(position) {
   var map_p = $(document).data('MAP_P');
   map_p.resolve(map);
   map.data.loadGeoJson('data/MBTARapidTransitLines.json');
-  map.data.setStyle({ strokeOpacity:0.2, strokeColor: 'blue' });
+  colorize_routes(map);
   init_my_marker(map);
   update_my_marker(position);
+}
+
+ROUTE_COLORS = {
+  'GREEN':'green',
+  'RED':'red',
+  'BLUE':'blue',
+  'ORANGE':'orange',
+  'SILVER':'gray'
+};
+
+function colorize_routes(map){
+  map.data.setStyle(function(feature){
+		      var line = feature.getProperty('LINE');
+		      var color = ROUTE_COLORS[line];
+		      if (line == undefined){
+			color = 'pink';
+		      }
+		      return {
+			strokeColor: color,
+			strokeOpacity:0.3,
+			strokeWeight: 4
+		      };
+		    });
 }
 
 
