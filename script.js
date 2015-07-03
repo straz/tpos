@@ -1,4 +1,4 @@
-MBTA_API_KEY = 'wX9NwuHnZU2ToO7GmGR9uw';
+MBTA_API_KEY = 'dLQxHTh91UuZU7ks7OLwMQ';
 MBTA_API_URL = 'http://realtime.mbta.com/developer/api/v2/';
 
 DEFAULT_ROUTE = 'All';
@@ -6,7 +6,9 @@ DEFAULT_ROUTE = 'All';
 ERRORS_SEEN = {};
 
 // sequence for select menu
-ROUTE_ORDER = ['All', 'Red', 'Orange', 'Blue', 'Green-B', 'Green-C', 'Green-D', 'Green-E', 66, 741, 742];
+ROUTE_ORDER = ['All', 'Red', 'Orange', 'Blue',
+	       'Green-B', 'Green-C', 'Green-D', 'Green-E',
+	       66, 741, 742];
 
 // map key onto properties
 ROUTES = { 'All': {name: 'All'},

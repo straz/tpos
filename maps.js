@@ -47,9 +47,12 @@ function load_map_foundLocation(position){
 }
 
 function update_pos_foundLocation(position){
+  var map_p = $(document).data('MAP_P');
   var lat = position.coords.latitude;
   var lng = position.coords.longitude;
-  update_my_marker({lat: lat, lng: lng});
+  map_p.done(function(){
+	       update_my_marker({lat: lat, lng: lng});
+	     });
 }
 
 var INFO_WINDOW = null;
@@ -59,6 +62,8 @@ function load_map(position) {
   var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   var map_p = $(document).data('MAP_P');
   map_p.resolve(map);
+  google.maps.event.addListener(map,'zoom_changed',
+  			  function() {on_zoom(map);});
   map.data.loadGeoJson('data/MBTARapidTransitLines.json');
   colorize_routes(map);
   init_my_marker(map);
@@ -101,7 +106,7 @@ function lookupRouteColor(route_id){
   return properties['color'];
 }
 
-function getTrainIcon(bearing, route_id, route_type){
+function getTrainIcon(bearing, route_id, route_type, zoom){
   var arrow = {
     fillOpacity: 0.8,
     scale: 4.5,
@@ -122,28 +127,50 @@ function getTrainIcon(bearing, route_id, route_type){
     arrow.strokeWeight = 1;
     arrow.scale = 7;
   }
+  if (zoom < 13) {
+    arrow.scale = arrow.scale * .75;
+  }
   return arrow;
 }
 
 // wait till map is loaded, then draw marker
 function drawTrainMarker(lat, lng, title, bearing, route_id, route_type){
   var map_loader = $(document).data('MAP_P');
-  var icon = getTrainIcon(bearing, route_id, route_type);
   map_loader.done(function(){
 		    var map = $(document).data('MAP');
+		    var zoom = map.getZoom();
 		    var m = new google.maps.Marker({
 		      position: {lat: lat, lng: lng},
 		      map: map,
-		      icon: icon,
+		      icon: getTrainIcon(bearing, route_id, route_type, zoom),
 		      title: title});
+		    m['route_info'] = {
+		      bearing: bearing,
+		      route_id: route_id,
+		      route_type: route_type
+		    };
 		    TRAIN_MARKERS.push(m);
 		    google.maps.event.addListener(m, 'click',
 						  function() {
+						    // TODO: toggle on click
 						    INFO_WINDOW.setContent(title);
 						    INFO_WINDOW.open(map,m);
 						  });
 		  });
   }
+
+function on_zoom(map){
+  var zoom = map.getZoom();
+  for (var i in TRAIN_MARKERS) {
+    var marker = TRAIN_MARKERS[i];
+    var route_info = marker.route_info;
+    var icon = getTrainIcon(route_info.bearing,
+			    route_info.route_id,
+			    route_info.route_type,
+			    zoom);
+    marker.setIcon(icon);
+  }
+}
 
 // Sets the map on all train markers.
 function setAllMap(map) {
