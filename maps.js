@@ -61,14 +61,18 @@ function load_map(position) {
   var mapOptions = { center: position, zoom: INITIAL_ZOOM };
   var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   var map_p = $(document).data('MAP_P');
+  init_my_marker(map);
   map_p.resolve(map);
   google.maps.event.addListener(map,'zoom_changed',
   			  function() {on_zoom(map);});
   map.data.loadGeoJson('data/MBTARapidTransitLines.json');
   colorize_routes(map);
-  init_my_marker(map);
   update_my_marker(position);
-  INFO_WINDOW = new google.maps.InfoWindow({ content: 'train info' });
+  INFO_WINDOW = new google.maps.InfoWindow({ content: $('<div/>').text('train info')[0] });
+  // Click anywhere on an info window to close it
+  google.maps.event.addDomListener(INFO_WINDOW.content,
+				'click',
+				function() { INFO_WINDOW.close();});
 }
 
 
@@ -150,12 +154,12 @@ function drawTrainMarker(lat, lng, title, bearing, route_id, route_type){
 		      route_type: route_type
 		    };
 		    TRAIN_MARKERS.push(m);
+		    // If you click on a train marker, open an Info Window
 		    google.maps.event.addListener(m, 'click',
 						  function() {
-						    // TODO: toggle on click
-						    INFO_WINDOW.setContent(title);
+						    INFO_WINDOW.content.innerHTML = title;
 						    INFO_WINDOW.open(map,m);
-						  });
+						    });
 		  });
   }
 
