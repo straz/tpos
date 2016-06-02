@@ -8,6 +8,7 @@ ERRORS_SEEN = {};
 // sequence for select menu
 ROUTE_ORDER = ['All', 'Red', 'Orange', 'Blue',
 	       'Green-B', 'Green-C', 'Green-D', 'Green-E',
+	       701, 747,
 	       66, 741, 742];
 
 // map key onto properties
@@ -20,8 +21,8 @@ ROUTES = { 'All': {name: 'All'},
 	   'Orange': {name:'Orange', color:'orange'},
 	   'Blue':{name:'Blue', color:'blue'},
 	   '66':{name:'66', color:'#BBB'},
-	   'CT1':{name:'CT1', color:'#BBB'},
-	   'CT2':{name:'CT2', color:'#BBB'},
+	   '701':{name:'CT1', color:'#BBB'},
+	   '747':{name:'CT2', color:'#BBB'},
 	   '741': {name: 'Silver SL1', color: '#BBB'},
 	   '742': {name: 'Silver SL2', color: '#BBB'}
 	 };
